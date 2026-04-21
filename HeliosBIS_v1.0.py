@@ -8,7 +8,7 @@ ips = [f"192.168.0.{i}" for i in range(11, 19)]
 headers = {"Content-Type": "application/json"}
 
 def call_api(port_name):
-    """Envia o comando de troca via PATCH para dev.ingest.input [3]."""
+    """Cria o comando PATCH para troca de entrada [3]."""
     payload = {"dev": {"ingest": {"input": port_name}}}
     for ip in ips:
         Thread(target=lambda i=ip: requests.patch(
@@ -16,18 +16,18 @@ def call_api(port_name):
         )).start()
 
 def confirm_switch(port_name):
-    """Cria uma camada de segurança antes da comutação."""
+    """Solicita confirmação antes da comutação. Uma vez confirmado, envia o payload para as processadoras"""
     target = "Disguise (DP1)" if port_name == "dp1" else "Resolume (DP2)"
     if messagebox.askyesno("Confirmação", f"Deseja realmente comutar todas as processadoras para {target}?"):
         call_api(port_name)
 
 def update_led(index, ip):
-    """Consulta o status atual via GET [1, 3]."""
+    """Consulta o status atual a cada 2 segundos via GET"""
     try:
         response = requests.get(f"http://{ip}/api/v1/public?dev.ingest.input", timeout=0.8)
         if response.status_code == 200:
             current = response.json()['dev']['ingest']['input']
-            color = "#2ecc71" if "dp1" in current else "#e74c3c"
+            color = "#3498db" if "dp1" in current else "#e67e22"
             leds[index].config(fg=color)
     except:
         leds[index].config(fg="gray")
@@ -55,10 +55,10 @@ for i in range(8):
 btn_frame = tk.Frame(root); btn_frame.pack(pady=10)
 
 # Os botões agora chamam a função confirm_switch
-tk.Button(btn_frame, text="Disguise (DP1)", bg="#2ecc71", fg="white", font=("Arial", 10, "bold"),
+tk.Button(btn_frame, text="Disguise (DP1)", bg="#3498db", fg="white", font=("Arial", 10, "bold"),
           width=15, height=2, command=lambda: confirm_switch("dp1")).grid(row=0, column=0, padx=10)
 
-tk.Button(btn_frame, text="Resolume (DP2)", bg="#e74c3c", fg="white", font=("Arial", 10, "bold"),
+tk.Button(btn_frame, text="Resolume (DP2)", bg="#e67e22", fg="white", font=("Arial", 10, "bold"),
           width=15, height=2, command=lambda: confirm_switch("dp2")).grid(row=0, column=1, padx=10)
 
 check_all_statuses()
