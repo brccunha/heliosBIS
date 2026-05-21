@@ -9,7 +9,7 @@ headers = {"Content-Type": "application/json"}
 all_current_alerts = {}
 
 def send_patch(payload):
-    """Envia comandos PATCH para as processadoras [1, 4]."""
+    """Envia comandos PATCH para todas as processadoras."""
     for ip in ips:
         Thread(target=lambda i=ip: requests.patch(
             f"http://{i}/api/v1/public", json=payload, headers=headers, timeout=1
@@ -59,7 +59,8 @@ def monitor_loop():
     for i, ip in enumerate(ips):
         Thread(target=fetch_status, args=(i, ip)).start()
     root.after(2000, monitor_loop)
-
+    
+# --- Pedidos de confirmação antes de alterar as configuração de topologia e redundância ---
 def confirm_topology(mode):
     if messagebox.askyesno("ALTERAR TOPOLOGIA", f"Deseja mudar todas para {mode.upper()}?"):
         send_patch({"dev": {"display": {"redundancy": {"mode": mode}}}})
@@ -87,10 +88,10 @@ for i in range(8):
     status_labels.append(lbl)
 
 # Comandos de Redundância
-tk.Label(root, text="Controle de Redundância (Flip)", font=("Arial", 10, "bold")).pack(pady=5)
+tk.Label(root, text="Controle de Redundância (Fallback)", font=("Arial", 10, "bold")).pack(pady=5)
 flip_frame = tk.Frame(root); flip_frame.pack(pady=5)
-tk.Button(flip_frame, text="ASSUMIR MAIN", bg="#3498db", fg="white", width=18, command=lambda: confirm_redundancy("main")).grid(row=0, column=0, padx=10)
-tk.Button(flip_frame, text="ASSUMIR BACKUP", bg="#f39c12", fg="white", width=18, command=lambda: confirm_redundancy("backup")).grid(row=0, column=1, padx=10)
+tk.Button(flip_frame, text="GO MAIN", bg="#3498db", fg="white", width=18, command=lambda: confirm_redundancy("main")).grid(row=0, column=0, padx=10)
+tk.Button(flip_frame, text="GO BACKUP", bg="#f39c12", fg="white", width=18, command=lambda: confirm_redundancy("backup")).grid(row=0, column=1, padx=10)
 
 # Comandos de Topologia
 tk.Label(root, text="Topologia do Sistema", font=("Arial", 10, "bold")).pack(pady=5)
