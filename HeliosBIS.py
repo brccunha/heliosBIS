@@ -7,6 +7,7 @@ import requests
 ips = [f"192.168.0.{i}" for i in range(11, 19)]
 headers = {"Content-Type": "application/json"}
 
+# --- Cria payload com chamada de API ---
 def call_api(port_name):
     """Cria o comando PATCH para troca de entrada [3]."""
     payload = {"dev": {"ingest": {"input": port_name}}}
@@ -15,6 +16,7 @@ def call_api(port_name):
             f"http://{i}/api/v1/public", json=payload, headers=headers, timeout=1
         )).start()
 
+# --- Função confirm_switch faz o envio do payload ---
 def confirm_switch(port_name):
     """Solicita confirmação antes da comutação. Uma vez confirmado, envia o payload para as processadoras"""
     target = "Disguise (DP1)" if port_name == "dp1" else "Resolume (DP2)"
@@ -36,7 +38,8 @@ def check_all_statuses():
     for i, ip in enumerate(ips):
         Thread(target=update_led, args=(i, ip)).start()
     root.after(2000, check_all_statuses)
-
+    
+# --- Interface Gráfica ---
 root = tk.Tk()
 root.title("Helios Batch Input Switcher")
 root.geometry("400x320")
@@ -54,7 +57,7 @@ for i in range(8):
 
 btn_frame = tk.Frame(root); btn_frame.pack(pady=10)
 
-# Os botões agora chamam a função confirm_switch
+# Os botões chamam a função confirm_switch
 tk.Button(btn_frame, text="Disguise (DP1)", bg="#3498db", fg="white", font=("Arial", 10, "bold"),
           width=15, height=2, command=lambda: confirm_switch("dp1")).grid(row=0, column=0, padx=10)
 

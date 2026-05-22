@@ -71,7 +71,7 @@ def confirm_redundancy(target_state):
 
 # --- Interface Gráfica ---
 root = tk.Tk()
-root.title("Helios Master Control - Professional Suite")
+root.title("Helios Master Control")
 root.geometry("500x650")
 
 # Tabela de Status (Monitoramento)
@@ -100,7 +100,7 @@ tk.Button(mode_frame, text="MODO FAILOVER", bg="#9b59b6", fg="white", width=18, 
 tk.Button(mode_frame, text="MODO SEAMLESS", bg="#2c3e50", fg="white", width=18, command=lambda: confirm_topology("seamless")).grid(row=0, column=1, padx=10)
 
 # Health Pane
-tk.Label(root, text="Painel de Saúde (Alertas Ativos)", font=("Arial", 10, "bold")).pack(pady=10)
+tk.Label(root, text="Alertas Ativos", font=("Arial", 10, "bold")).pack(pady=10)
 health_text = scrolledtext.ScrolledText(root, width=55, height=8, font=("Consolas", 9), bg="#f8f9fa", state='disabled')
 health_text.pack(padx=20, pady=5)
 
